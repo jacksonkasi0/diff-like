@@ -1,0 +1,16 @@
+{
+  "name": "diff-like",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/diff": "^7.0.1",
+    "diff": "^7.0.0"
+  }
+}
