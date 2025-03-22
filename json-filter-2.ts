@@ -8,7 +8,6 @@ interface TreeNode {
   id: string;
   name: string;
   text_content: string;
-  path: string;
   children?: TreeNode[];
 }
 
@@ -52,19 +51,20 @@ function parsePromptColumns(prompt: string): string[] {
  * Extract row objects from the table based on the prompt using fuzzy search.
  * Each row is represented as an object where keys are the target column keywords
  * and values are FlatCell objects (with id, name, and text_content).
+ *
+ * This version works when the provided JSON data is the Table node itself.
  */
 function extractRowsFromPrompt(root: TreeNode, prompt: string): any[] {
-  if (!root.children) return [];
-  
-  // Find the Table node (assumed to be "Data Table" -> "Table")
-  const tableNode = root.children.find(child => child.name === "Table");
+  // If the provided root is not a table, try to find the table node.
+  const tableNode = root.name === "Table" ? root : 
+    (root.children ? root.children.find(child => child.name === "Table") : undefined);
   if (!tableNode || !tableNode.children) return [];
   
   // Find the header row (with name "Header")
   const headerRow = tableNode.children.find(child => child.name === "Header");
   if (!headerRow || !headerRow.children) return [];
   
-  // Extract header texts from each cell of the header row.
+  // Extract header texts from each cell in the header row.
   const headerTexts: string[] = headerRow.children.map(cell => getDeepText(cell));
   
   // Parse the prompt to get target column keywords.
@@ -83,8 +83,7 @@ function extractRowsFromPrompt(root: TreeNode, prompt: string): any[] {
     }
   }
   
-  // Create an array of rows. Each row is an object where each key (from the prompt)
-  // maps to a FlatCell object.
+  // Iterate over the rows (children with name "Row")
   const rows: any[] = [];
   for (const row of tableNode.children) {
     if (row.name === "Row" && row.children) {
@@ -99,7 +98,6 @@ function extractRowsFromPrompt(root: TreeNode, prompt: string): any[] {
             text_content: getDeepText(cell)
           };
         } else {
-          // if the cell does not exist, provide an empty cell structure
           rowObj[keyword] = { id: '', name: '', text_content: '' };
         }
       }
