@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@types/diff": "^7.0.1",
-    "diff": "^7.0.0"
+    "diff": "^7.0.0",
+    "fast-json-patch": "^3.1.1",
+    "fuse.js": "^7.1.0",
+    "fuzzysort": "^3.1.0"
   }
 }
